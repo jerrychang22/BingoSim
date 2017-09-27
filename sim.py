@@ -1,8 +1,10 @@
 import random
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-NUM_PLAYERS = 1
+THROUGH_RANGE = 1
+NUM_GAMES = 10000
+NUM_PLAYERS = 25
 BOARD_SIZE_X = 5
 BOARD_SIZE_Y = 5
 #Must be greater than 0. 
@@ -10,16 +12,21 @@ BOARD_SIZE_Y = 5
 #Would need to change the way checking for wins works to a seperate array set
 START_RANGE = 1   
 INTERVAL = 15
-FREE_SPACE = False
+FREE_SPACE = True
 END = START_RANGE + BOARD_SIZE_X * INTERVAL
 
 def init_board(board_size_x, board_size_y, start, interval, free):
     board = []
 
     #Generate a column of numbers for each LETTER
-    for x in range(0, board_size_x):
+    for x in range(board_size_x):
         s = start + x * interval
         l = random.sample(range(s, s + interval), board_size_y)
+        
+        #Add free space
+        if free:
+            if (2*x+1)/2 == board_size_x/2:
+                l[board_size_y // 2] = 0
         board.append(l)
 
     
@@ -29,19 +36,19 @@ def init_board(board_size_x, board_size_y, start, interval, free):
 
 def standard_win(board):
     #Check rows for 0's
-    out = map(np.sum, board)
+    out = list(map(np.sum, board))
     if 0 in out:
         return 1
 
     #Check cols for 0's
-    out = map(np.sum, board.T)
+    out = list(map(np.sum, board.T))
     if 0 in out:
         return 1
 
     #Check diagonals for 0's
-    if np.sum(board.diagonal()) == 0:
+    if board.trace() == 0:
         return 1
-    if np.sum(board.diagonal(axis1 = 1, axis2 = 0)) == 0:
+    if np.fliplr(board).trace() == 0:
         return 1
     
     else:
@@ -54,39 +61,60 @@ WIN_CONDITION = standard_win
 
 def play_bingo(player_boards):
     win = False
+    counter = 1
 
     while win == False:
         #Call a random number
         rand_call = random.randint(START_RANGE, END)
-        
+        #print("Turn " + str(counter) + " : " + str(rand_call) + " was called\n")
+        counter += 1
+
         #Search all boards for called number
-        for board in player_boards:
-            for row in board:
+        for board in range(NUM_PLAYERS):
+            for row in player_boards[board]:
                 if rand_call in row:
                     #Replace number with 0 if found 
-                    print("Found " + str(rand_call) + " in \n" + str(board) + "\n")
+                    #print("Found " + str(rand_call) + " in Player " + str(board + 1) + "\n" + str(player_boards[board]) + "\n")
                     ind = row.tolist().index(rand_call)
                     row[ind] = 0
 
 
 
         #Check for wins
-        check = map(WIN_CONDITION, player_boards)
+        check = list(map(WIN_CONDITION, player_boards))
         win = 1 in check
+
+    winning_player = check.index(1) + 1
+    #print("Winning player : Player " + str(winning_player) + "\n")
+    return counter
+
 
 def main():
     player_boards = []
-    #status_boards = []
-    for a in range(NUM_PLAYERS):
-        new_board = init_board(BOARD_SIZE_X, BOARD_SIZE_Y, START_RANGE, INTERVAL, FREE_SPACE)
-        player_boards.append(new_board)
-        #new_status = [[0 for col in range(BOARD_SIZE_Y)] for row in range(BOARD_SIZE_X)]
-        #status_boards.append(new_status)
-    #print(player_boards)
-    #print(status_boards)
+    #print("Playing Bingo\n")
+    
+    data = []
 
-    print("Playing Bingo\n")
-    play_bingo(player_boards)
+    for players in range(NUM_PLAYERS, NUM_PLAYERS - THROUGH_RANGE, -1):
+        
+        turns = []
+        for game in range(NUM_GAMES):
+
+            for a in range(players):
+                new_board = init_board(BOARD_SIZE_X, BOARD_SIZE_Y, START_RANGE, INTERVAL, FREE_SPACE)
+                player_boards.append(new_board)
+                
+            turns.append( play_bingo(player_boards) )
+            player_boards = []
+        data.append(turns)
+
+    #Plot data
+    #print(data[0])
+    plt.hist(data[0])
+    plt.grid(True)
+    plt.show()
+    
+
     return 0;
 
 
