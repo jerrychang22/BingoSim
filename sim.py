@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import statistics
 
 THROUGH_RANGE = 1
-NUM_GAMES = 10000
+NUM_GAMES = 100
 NUM_PLAYERS = 10
 BOARD_SIZE_X = 10
 BOARD_SIZE_Y = 10
@@ -63,10 +63,14 @@ WIN_CONDITION = standard_win
 def play_bingo(player_boards):
     win = False
     counter = 1
-
+    
+    already_called = []
     while win == False:
         #Call a random number
         rand_call = random.randint(START_RANGE, END)
+        if rand_call in already_called:
+            continue
+        already_called.append(rand_call)
         #print("Turn " + str(counter) + " : " + str(rand_call) + " was called\n")
         counter += 1
 
