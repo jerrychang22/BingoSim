@@ -1,12 +1,13 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import statistics
 
 THROUGH_RANGE = 1
 NUM_GAMES = 10000
-NUM_PLAYERS = 25
-BOARD_SIZE_X = 5
-BOARD_SIZE_Y = 5
+NUM_PLAYERS = 10
+BOARD_SIZE_X = 10
+BOARD_SIZE_Y = 10
 #Must be greater than 0. 
 #Maybe I'll make 0 and negatives available in the future
 #Would need to change the way checking for wins works to a seperate array set
@@ -107,6 +108,11 @@ def main():
             turns.append( play_bingo(player_boards) )
             player_boards = []
         data.append(turns)
+
+    
+    print("Mean : " + str(statistics.mean(data[0])) + "\n")
+    print("Median : " + str(statistics.median(data[0])) + "\n")
+    print("Mode : " + str(statistics.mode(data[0])) + "\n")
 
     #Plot data
     #print(data[0])
