@@ -5,9 +5,9 @@ import statistics
 
 THROUGH_RANGE = 1
 NUM_GAMES = 100
-NUM_PLAYERS = 10
-BOARD_SIZE_X = 10
-BOARD_SIZE_Y = 10
+NUM_PLAYERS = 200
+BOARD_SIZE_X = 5
+BOARD_SIZE_Y = 5
 #Must be greater than 0. 
 #Maybe I'll make 0 and negatives available in the future
 #Would need to change the way checking for wins works to a seperate array set
@@ -116,7 +116,10 @@ def main():
     
     print("Mean : " + str(statistics.mean(data[0])) + "\n")
     print("Median : " + str(statistics.median(data[0])) + "\n")
-    print("Mode : " + str(statistics.mode(data[0])) + "\n")
+    try:
+        print("Mode : " + str(statistics.mode(data[0])) + "\n")
+    except StatisticsError:
+        print("Multiple modes\n")
 
     #Plot data
     #print(data[0])
